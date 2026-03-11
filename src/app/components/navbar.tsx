@@ -1,9 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Squash as Hamburger } from "hamburger-react";
+import { useAuthStore } from "@/zustand/authStore";
 
 // Navbar items type definition
 interface NavItem {
@@ -39,6 +40,10 @@ const navItems: NavItem[] = [
 
 export default function Navbar() {
   const [isOpen, setOpen] = useState(false);
+  // const { user } = useAuthStore();
+  const { user, clearAuth } = useAuthStore(); // clearAuth bhi add karo
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false); // ✅ NEW
+  const profileDropdownRef = useRef<HTMLDivElement>(null); // ✅ NEW
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [openMobileDropdown, setOpenMobileDropdown] = useState<string | null>(
@@ -79,6 +84,20 @@ export default function Navbar() {
       }
     };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ✅ Profile dropdown close on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(e.target as Node)
+      ) {
+        setProfileDropdownOpen(false);
+      }
+    };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
@@ -159,24 +178,22 @@ export default function Navbar() {
                     {/* Dropdown Menu */}
                     {openDropdown === item.label && (
                       <div className="absolute top-full left-0 mt-2 w-56 bg-black/95 backdrop-blur-md border border-white/20 rounded-lg shadow-lg py-2 z-50">
-                      
-                          {item.dropdown.map((dropItem) => (
-                            <Link
-                              key={dropItem.href}
-                              href={dropItem.href}
-                              className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 hover:bg-white/10 ${
-                                pathname === dropItem.href
-                                  ? "text-[#9EFF00] bg-white/5"
-                                  : "text-white"
-                              }`}
-                              onClick={() => setOpenDropdown(null)}
-                            >
-                              {dropItem.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )
-                    }
+                        {item.dropdown.map((dropItem) => (
+                          <Link
+                            key={dropItem.href}
+                            href={dropItem.href}
+                            className={`block px-4 py-3 text-sm font-medium transition-colors duration-200 hover:bg-white/10 ${
+                              pathname === dropItem.href
+                                ? "text-[#9EFF00] bg-white/5"
+                                : "text-white"
+                            }`}
+                            onClick={() => setOpenDropdown(null)}
+                          >
+                            {dropItem.label}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <Link
@@ -194,7 +211,7 @@ export default function Navbar() {
 
           {/* Desktop Privacy Policy and Contact Button */}
           <div className="hidden lg:flex items-center gap-3 z-10">
-            <Link
+            {/* <Link
               href="/wgAuthForm"
               className={`px-3 xl:px-4 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
                 pathname === "/wgAuthForm"
@@ -202,8 +219,111 @@ export default function Navbar() {
                   : "text-white hover:text-[#9EFF00]"
               }`}
             >
-             Login
-            </Link>
+              Login
+            </Link> */}
+            {/* {user ? (
+              <Link
+                href="/dashboard"
+                className="px-3 xl:px-4 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base text-white hover:text-[#9EFF00]"
+              >
+                👤 {user.fullname?.split(" ")[0]}
+              </Link>
+            ) : ( */}
+            {user ? (
+              <div className="relative" ref={profileDropdownRef}>
+                <button
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
+                >
+                  <div className="w-8 h-8 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold text-sm">
+                    {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
+                  <span className="text-white text-sm font-medium">
+                    {user.fullname?.split(" ")[0]}
+                  </span>
+                  <svg
+                    className={`w-4 h-4 text-white transition-transform ${profileDropdownOpen ? "rotate-180" : ""}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Dropdown Menu */}
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-black/95 backdrop-blur-md border border-white/20 rounded-xl shadow-xl py-2 z-50">
+                    {/* User Info */}
+                    <div className="px-4 py-3 border-b border-white/10">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold">
+                          {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                        </div>
+                        <div>
+                          <p className="text-white font-medium text-sm">
+                            {user.fullname}
+                          </p>
+                          <p className="text-gray-400 text-xs">{user.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Menu Items */}
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-all text-sm"
+                    >
+                      {" "}
+                      <Image
+                        src="WG-Tech-Sol-Website-beta/public/images/op6.png"
+                        alt="settings"
+                        width={16}
+                        height={10}
+                        className="rounded-full"
+                      />
+                      My Account
+                    </Link>
+                    {/* <Link
+                      href="/dashboard"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-white hover:bg-white/10 transition-all text-sm"
+                    >
+                      📊 Dashboard
+                    </Link> */}
+                    <div className="border-t border-white/10 mt-1">
+                      <button
+                        onClick={() => {
+                          localStorage.removeItem("token");
+                          clearAuth();
+                          setProfileDropdownOpen(false);
+                          window.location.href = "/";
+                        }}
+                        className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-white/10 transition-all text-sm w-full text-left"
+                      >
+                        Sign Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/wgAuthForm"
+                className={`px-4 xl:px-5 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
+                  pathname === "/wgAuthForm"
+                    ? "text-[#9EFF00]"
+                    : "text-white hover:text-[#9EFF00]"
+                }`}
+              >
+                Login
+              </Link>
+            )}
             <Link
               href="/contact"
               className={`px-4 xl:px-5 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
@@ -326,7 +446,7 @@ export default function Navbar() {
 
           {/* Mobile Privacy Policy and Contact Button */}
           <div className="px-4 sm:px-6 pb-6 space-y-3">
-            <Link
+            {/* <Link
               href="/wgAuthForm"
               onClick={() => setOpen(false)}
               className={`block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg ${
@@ -336,7 +456,70 @@ export default function Navbar() {
               }`}
             >
               Login
-            </Link>
+            </Link> */}
+            {/* {user ? (
+              <Link
+                href="/dashboard"
+                onClick={() => setOpen(false)}
+                className="block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg text-white hover:bg-gray-800"
+              >
+                👤 {user.fullname?.split(" ")[0]}
+              </Link>
+            ) : ( */}
+            {user ? (
+              <div className="w-full space-y-2">
+                {/* User Info */}
+                <div className="flex items-center gap-3 py-3 px-4 bg-[#1a1a1a] rounded-lg">
+                  <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold">
+                    {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-white font-medium text-sm">
+                      {user.fullname}
+                    </p>
+                    <p className="text-gray-400 text-xs">{user.email}</p>
+                  </div>
+                </div>
+                <Link
+                  href="/dashboard/profile"
+                  onClick={() => setOpen(false)}
+                  className="block w-full text-center py-3 font-semibold rounded-lg text-white hover:bg-gray-800 text-base"
+                >
+                  ⚙️ My Account
+                </Link>
+                {/* <Link
+                  href="/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="block w-full text-center py-3 font-semibold rounded-lg text-white hover:bg-gray-800 text-base"
+                >
+                  📊 Dashboard
+                </Link> */}
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    clearAuth();
+                    setOpen(false);
+                    window.location.href = "/";
+                  }}
+                  className="block w-full text-center py-3 font-semibold rounded-lg text-red-400 hover:bg-gray-800 text-base"
+                >
+                  🚪 Sign Out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/wgAuthForm"
+                onClick={() => setOpen(false)}
+                className={`block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg ${
+                  pathname === "/wgAuthForm"
+                    ? "bg-gray-800 text-[#9EFF00]"
+                    : "text-white hover:bg-gray-800 active:bg-gray-700"
+                }`}
+              >
+                Login
+              </Link>
+            )}
+
             <Link
               href="/contact"
               onClick={() => setOpen(false)}
