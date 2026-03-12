@@ -229,14 +229,38 @@ export default function Navbar() {
                 👤 {user.fullname?.split(" ")[0]}
               </Link>
             ) : ( */}
+            <Link
+              href="/contact"
+              className={`px-4 xl:px-5 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
+                pathname === "/contact"
+                  ? "bg-[#8CE600] text-black ring-2 ring-white"
+                  : "bg-[#8CE600] text-black hover:bg-[#9eff00] hover:scale-105"
+              }`}
+            >
+              Contact Us
+            </Link>
+
             {user ? (
               <div className="relative" ref={profileDropdownRef}>
                 <button
                   onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
                   className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-all"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold text-sm">
+                  {/* <div className="w-8 h-8 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold text-sm">
                     {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                  </div> */}
+                  <div className="w-8 h-8 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold text-sm overflow-hidden border border-[#9EFF00]">
+                    {user.profilePicture ? (
+                      <img
+                        src={`http://localhost:8003${user.profilePicture}`}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span>
+                        {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                      </span>
+                    )}
                   </div>
                   <span className="text-white text-sm font-medium">
                     {user.fullname?.split(" ")[0]}
@@ -262,8 +286,21 @@ export default function Navbar() {
                     {/* User Info */}
                     <div className="px-4 py-3 border-b border-white/10">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold">
+                        {/* <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold">
                           {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                        </div> */}
+                        <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold overflow-hidden">
+                          {user.profilePicture ? (
+                            <img
+                              src={`http://localhost:8003${user.profilePicture}`}
+                              alt="Profile"
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span>
+                              {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                            </span>
+                          )}
                         </div>
                         <div>
                           <p className="text-white font-medium text-sm">
@@ -315,25 +352,20 @@ export default function Navbar() {
             ) : (
               <Link
                 href="/wgAuthForm"
+                // className={`px-3 xl:px-4 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
+                //   pathname === "/wgAuthForm"
+                //     ? "text-[#9EFF00]"
+                //     : "text-white hover:text-[#9EFF00]"
+                // }`}
                 className={`px-4 xl:px-5 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
                   pathname === "/wgAuthForm"
-                    ? "text-[#9EFF00]"
-                    : "text-white hover:text-[#9EFF00]"
+                    ? "bg-[#8CE600] text-black ring-2 ring-white"
+                    : "bg-[#8CE600] text-black hover:bg-[#9eff00] hover:scale-105"
                 }`}
               >
                 Login
               </Link>
             )}
-            <Link
-              href="/contact"
-              className={`px-4 xl:px-5 py-2 xl:py-3 font-semibold rounded-lg transition-all duration-200 text-sm xl:text-base ${
-                pathname === "/contact"
-                  ? "bg-[#8CE600] text-black ring-2 ring-white"
-                  : "bg-[#8CE600] text-black hover:bg-[#9eff00] hover:scale-105"
-              }`}
-            >
-              Contact Us
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -466,12 +498,38 @@ export default function Navbar() {
                 👤 {user.fullname?.split(" ")[0]}
               </Link>
             ) : ( */}
+
+            <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
+              className={`block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg ${
+                pathname === "/contact"
+                  ? "bg-[#9EFF00] text-black ring-2 ring-white"
+                  : "bg-[#9EFF00] text-black hover:bg-[#8CE600] active:bg-[#7CD600]"
+              }`}
+            >
+              Contact Us
+            </Link>
+
             {user ? (
               <div className="w-full space-y-2">
                 {/* User Info */}
                 <div className="flex items-center gap-3 py-3 px-4 bg-[#1a1a1a] rounded-lg">
-                  <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold">
+                  {/* <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold">
                     {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                  </div> */}
+                  <div className="w-10 h-10 rounded-full bg-[#9EFF00] flex items-center justify-center text-black font-bold overflow-hidden">
+                    {user.profilePicture ? (
+                      <img
+                        src={`http://localhost:8003${user.profilePicture}`}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span>
+                        {user.fullname?.charAt(0)?.toUpperCase() || "U"}
+                      </span>
+                    )}
                   </div>
                   <div className="text-left">
                     <p className="text-white font-medium text-sm">
@@ -510,27 +568,21 @@ export default function Navbar() {
               <Link
                 href="/wgAuthForm"
                 onClick={() => setOpen(false)}
+                // className={`block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg ${
+                //   pathname === "/wgAuthForm"
+                //     ? "bg-gray-800 text-[#9EFF00]"
+                //     : "text-white hover:bg-gray-800 active:bg-gray-700"
+                // }`}
+
                 className={`block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg ${
                   pathname === "/wgAuthForm"
-                    ? "bg-gray-800 text-[#9EFF00]"
-                    : "text-white hover:bg-gray-800 active:bg-gray-700"
+                    ? "bg-[#9EFF00] text-black ring-2 ring-white"
+                    : "bg-[#9EFF00] text-black hover:bg-[#8CE600] active:bg-[#7CD600]"
                 }`}
               >
                 Login
               </Link>
             )}
-
-            <Link
-              href="/contact"
-              onClick={() => setOpen(false)}
-              className={`block w-full text-center py-3 sm:py-4 font-semibold rounded-lg transition-all duration-200 text-base sm:text-lg ${
-                pathname === "/contact"
-                  ? "bg-[#9EFF00] text-black ring-2 ring-white"
-                  : "bg-[#9EFF00] text-black hover:bg-[#8CE600] active:bg-[#7CD600]"
-              }`}
-            >
-              Contact Us
-            </Link>
           </div>
         </div>
       </div>

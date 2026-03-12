@@ -39,7 +39,13 @@ interface AuthStore {
   setAuth: (data: { token: string; user: AuthUser }) => void;
   clearAuth: () => void;
 }
-
+interface AuthUser {
+  _id: string;
+  fullname: string;
+  email: string;
+  profilePicture?: string; // ✅ ADD
+  nationalId?: string | null;
+}
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set) => ({
